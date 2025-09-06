@@ -1,4 +1,4 @@
-  <!-- Horloge digitale -->
+<!-- Horloge digitale -->
   <div id="clock" style="position:fixed;top:24px;right:32px;z-index:1100;font-family:'Montserrat',Arial,sans-serif;font-size:1.25rem;font-weight:600;color:#0d6efd;background:rgba(255,255,255,0.85);padding:8px 18px;border-radius:16px;box-shadow:0 2px 12px rgba(13,110,253,0.08);letter-spacing:2px;user-select:none;min-width:120px;text-align:center;"></div>
   <!-- Toast de bienvenue -->
   <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
@@ -354,6 +354,47 @@
         try { audio.currentTime = 0; audio.play(); } catch(e){}
       });
     });
+    // Génère un avatar unique via ui-avatars.com
+    function getAvatar(nom) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(nom)}&background=0d6efd&color=fff&rounded=true&size=48`;
+    }
+
+    function renderList(type, data) {
+      switch(type) {
+        case 'utilisateurs':
+          return `<h6>Utilisateurs connectés</h6><ul class='list-unstyled'>` +
+            data.utilisateurs.map(u => `
+              <li class='d-flex align-items-center mb-2'>
+                <img src='${getAvatar(u.nom)}' alt='avatar' style='width:36px;height:36px;border-radius:50%;margin-right:10px;border:2px solid #e0e7ff;'>
+                <span>${u.nom}</span>
+                <span class='badge ms-2 bg-${u.statut==='En ligne'?'success':u.statut==='Absent'?'secondary':'warning text-dark'}'>${u.statut}</span>
+              </li>
+            `).join('') +
+            `</ul><small class='text-muted'>Données dynamiques</small>`;
+        case 'producteurs':
+          return `<h6>Producteurs partenaires</h6><ul>` +
+            data.producteurs.map(p => `<li>🌾 ${p.nom} <span class='text-muted'>(${p.region})</span></li>`).join('') +
+            `</ul><small class='text-muted'>Données dynamiques</small>`;
+        case 'produits':
+          return `<h6>Produits disponibles</h6><ul>` +
+            data.produits.map(p => `<li>🥕 ${p.nom}</li>`).join('') +
+            `</ul><small class='text-muted'>Données dynamiques</small>`;
+        case 'commandes':
+          return `<h6>Commandes récentes</h6><ul>` +
+            data.commandes.map(c => `<li>${c.id} - ${c.client} <span class='badge bg-${c.statut==='Livrée'?'success':c.statut==='Annulée'?'danger':'info text-dark'}'>${c.statut}</span></li>`).join('') +
+            `</ul><small class='text-muted'>Données dynamiques</small>`;
+        case 'capteurs':
+          return `<h6>Capteurs IoT installés</h6><ul>` +
+            data.capteurs.map(c => `<li>${c.type} - ${c.emplacement}</li>`).join('') +
+            `</ul><small class='text-muted'>Données dynamiques</small>`;
+        case 'alertes':
+          return `<h6>Alertes système</h6><ul>` +
+            data.alertes.map(a => `<li><span class='text-${a.niveau==='Urgent'?'danger':a.niveau==='Avertissement'?'warning':'info'}'>[${a.niveau}]</span> ${a.message}</li>`).join('') +
+            `</ul><small class='text-muted'>Données dynamiques</small>`;
+        default:
+          return 'Aucune donnée.';
+      }
+    }
   </script>
 </body>
 </html>
