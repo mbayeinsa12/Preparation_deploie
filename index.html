@@ -1,3 +1,5 @@
+  <!-- Horloge digitale -->
+  <div id="clock" style="position:fixed;top:24px;right:32px;z-index:1100;font-family:'Montserrat',Arial,sans-serif;font-size:1.25rem;font-weight:600;color:#0d6efd;background:rgba(255,255,255,0.85);padding:8px 18px;border-radius:16px;box-shadow:0 2px 12px rgba(13,110,253,0.08);letter-spacing:2px;user-select:none;min-width:120px;text-align:center;"></div>
   <!-- Toast de bienvenue -->
   <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
     <div id="welcomeToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -244,10 +246,37 @@
   <script src="https://kit.fontawesome.com/2c36e9b7b1.js" crossorigin="anonymous"></script>
   <script>
     // Toast de bienvenue à l'ouverture
+    // Confettis lors de l'ouverture du toast de bienvenue
     window.addEventListener('DOMContentLoaded', function() {
       var toast = new bootstrap.Toast(document.getElementById('welcomeToast'), { delay: 3500 });
       toast.show();
+      // Confettis animés
+      setTimeout(function() {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.8 },
+          colors: ['#0d6efd','#6610f2','#38bdf8','#facc15','#22d3ee']
+        });
+      }, 400);
     });
+    // Script confetti (CDN)
+    (function(){
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+      document.head.appendChild(s);
+    })();
+    // Horloge digitale animée
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,'0');
+      const m = String(now.getMinutes()).padStart(2,'0');
+      const s = String(now.getSeconds()).padStart(2,'0');
+      document.getElementById('clock').textContent = h+":"+m+":"+s;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
     // Bouton d'aide flottant
     document.getElementById('helpBtn').addEventListener('click', function() {
       var helpModal = new bootstrap.Modal(document.getElementById('helpModal'));
@@ -311,6 +340,10 @@
         <small class='text-muted'>Aucune alerte critique en cours</small>
       `
     };
+    // Effet sonore à l'ouverture du modal 'Voir'
+    const audio = document.createElement('audio');
+    audio.src = 'https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae0b2.mp3'; // Son court libre de droit
+    audio.preload = 'auto';
     document.querySelectorAll('.voir-btn').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -318,6 +351,7 @@
         document.getElementById('voirModalBody').innerHTML = listes[type] || 'Aucune donnée.';
         var voirModal = new bootstrap.Modal(document.getElementById('voirModal'));
         voirModal.show();
+        try { audio.currentTime = 0; audio.play(); } catch(e){}
       });
     });
   </script>
